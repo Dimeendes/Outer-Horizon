@@ -75,7 +75,6 @@ export default function Home() {
 
         <Text style={styles.paragrafo}>Senha de Acesso</Text>
 
-        {/* SENHA COM IONICONS */}
         <View style={styles.senhaContainer}>
           <TextInput
             style={styles.caixaTextoSenha}

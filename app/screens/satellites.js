@@ -24,16 +24,10 @@ export default function Satellites() {
     if (planet) setSelectedPlanet(planet);
   }, [planet]);
 
-  // =========================
-  // PLANETA ATUAL (SEGURANÇA)
-  // =========================
   const planetData =
     PLANET_LIST.find((p) => p.id === selectedPlanet) ||
     PLANET_LIST[0];
 
-  // =========================
-  // SATÉLITES FIXOS
-  // =========================
   const fixedSatellites = (SATELLITES_LIST?.[selectedPlanet] ?? []).map(
     (sat) => ({
       ...sat,
@@ -42,9 +36,6 @@ export default function Satellites() {
     })
   );
 
-  // =========================
-  // SATÉLITES DO USUÁRIO (SEGURANÇA TOTAL)
-  // =========================
   const userSatellites = (missions ?? [])
     .filter((m) => m?.planetId === selectedPlanet)
     .map((m, index) => ({
@@ -60,9 +51,6 @@ export default function Satellites() {
       isUserCreated: true,
     }));
 
-  // =========================
-  // COMBINAÇÃO FINAL
-  // =========================
   const satellites = [
     ...fixedSatellites,
     ...userSatellites,
@@ -79,7 +67,6 @@ export default function Satellites() {
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.title}>🛰 Centro Orbital</Text>
 
-        {/* SELECT PLANETA */}
         <TouchableOpacity
           style={styles.selectorButton}
           onPress={() => setModalVisible(true)}
@@ -89,7 +76,6 @@ export default function Satellites() {
           </Text>
         </TouchableOpacity>
 
-        {/* ORBITA */}
         <View
           style={[
             styles.orbitArea,
@@ -125,7 +111,6 @@ export default function Satellites() {
           ))}
         </View>
 
-        {/* LISTA */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>🛰 Satélites</Text>
 
@@ -159,7 +144,6 @@ export default function Satellites() {
         </View>
       </ScrollView>
 
-      {/* MODAL */}
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modal}>

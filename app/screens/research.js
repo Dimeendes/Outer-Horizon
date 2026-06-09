@@ -67,7 +67,6 @@ export default function Research() {
     >
       <Text style={styles.title}>🔬 Centro de Pesquisa</Text>
 
-      {/* SELECT PLANETA */}
       <TouchableOpacity
         style={styles.selector}
         onPress={() => setModalVisible(true)}
@@ -77,14 +76,12 @@ export default function Research() {
         </Text>
       </TouchableOpacity>
 
-      {/* SEM DADOS */}
       {!hasData && (
         <Text style={styles.empty}>
           Nenhum dado disponível para este planeta.
         </Text>
       )}
 
-      {/* 🌡 TEMPERATURA (ºC/min) */}
       {hasData && (
         <View style={styles.block}>
           <Text style={styles.section}>🌡 Temperatura (ºC/min)</Text>
@@ -106,7 +103,6 @@ export default function Research() {
             style={{ marginVertical: 10 }}
           />
 
-          {/* 🌪 PRESSÃO (kPa/min)*/}
           <Text style={styles.section}>🌪 Pressão (kPa/min)</Text>
 
           <LineChart
@@ -126,7 +122,6 @@ export default function Research() {
             style={{ marginVertical: 10 }}
           />
 
-          {/* 🌍 SÍSMICO (indice/min)*/}
           <Text style={styles.section}>🌍 Atividade sísmica (indice/min)</Text>
 
           <LineChart
@@ -148,7 +143,6 @@ export default function Research() {
         </View>
       )}
 
-      {/* FONTES */}
       {hasData && (
         <View style={styles.card}>
           <Text style={styles.cardTitle}>🛰 Satélites de pesquisa</Text>
@@ -179,7 +173,6 @@ export default function Research() {
         </View>
       )}
 
-      {/* MODAL */}
       <Modal visible={modalVisible} transparent animationType="fade">
         <TouchableOpacity
           style={styles.modal}

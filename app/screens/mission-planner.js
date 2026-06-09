@@ -30,9 +30,6 @@ const ENERGY_TYPES = [
   "Bateria interna",
 ];
 
-// ===============================
-// 📅 AUTO FORMAT DATA
-// ===============================
 function formatDate(value) {
   const cleaned = value.replace(/\D/g, "").slice(0, 8);
 
@@ -68,25 +65,39 @@ export default function MissionControl() {
   const [objectiveModal, setObjectiveModal] = useState(false);
   const [directionModal, setDirectionModal] = useState(false);
   const [energyModal, setEnergyModal] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  function clearError(field) {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  }
 
   function calculateArrival(id) {
     const p = PLANETS.find((pl) => pl.id === id);
     return p ? p.time : "Desconhecido";
   }
 
-  // ===============================
-  // 🚀 ADICIONAR MISSÃO
-  // ===============================
   async function handleAddMission() {
-    const hasInvalidMissionData =
-      !name ||
-      !planetId ||
-      !objective ||
-      !direction ||
-      !energy ||
-      !isValidDate(startDate);
+    const newErrors = {};
 
-    if (hasInvalidMissionData) return;
+    if (!name.trim()) newErrors.name = "Campo obrigatório";
+    if (!planetId) newErrors.planetId = "Campo obrigatório";
+    if (!objective) newErrors.objective = "Campo obrigatório";
+    if (!direction) newErrors.direction = "Campo obrigatório";
+    if (!energy) newErrors.energy = "Campo obrigatório";
+    if (!startDate.trim()) newErrors.startDate = "Campo obrigatório";
+    else if (!isValidDate(startDate)) newErrors.startDate = "Data inválida (DD/MM/AAAA)";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
 
     await createMission({
       name,
@@ -108,9 +119,6 @@ export default function MissionControl() {
     setCreateModal(false);
   }
 
-  // ===============================
-  // 🚀 CANCELAR MISSÃO
-  // ===============================
   return (
     <View style={styles.container}>
       <Text style={styles.title}>🛰 Controle de missão</Text>
@@ -127,7 +135,6 @@ export default function MissionControl() {
         </Text>
       </TouchableOpacity>
 
-      {/* LISTA */}
       <FlatList
         data={missions}
         keyExtractor={(item) => item.id}
@@ -164,56 +171,74 @@ export default function MissionControl() {
         }}
       />
 
-      {/* MODAL CRIAÇÃO */}
       <Modal visible={createModal} transparent animationType="slide">
         <View style={styles.modal}>
           <View style={styles.modalBox}>
             <Text style={styles.modalTitle}>Criar missão</Text>
 
-            <TextInput
-              placeholder="Nome do satélite"
-              value={name}
-              onChangeText={setName}
-              style={styles.input}
-            />
+            <View style={styles.fieldContainer}>
+              <TextInput
+                placeholder="Nome do satélite"
+                value={name}
+                onChangeText={(text) => {
+                  setName(text);
+                  clearError("name");
+                }}
+                style={styles.input}
+              />
+              {errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
+            </View>
 
-            {/* PLANETA */}
-            <TouchableOpacity style={styles.selector} onPress={() => setPlanetModal(true)}>
-              <Text style={styles.selectorText}>
-                {planetId || "Selecionar planeta"}
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.fieldContainer}>
+              <TouchableOpacity style={styles.selector} onPress={() => setPlanetModal(true)}>
+                <Text style={styles.selectorText}>
+                  {planetId || "Selecionar planeta"}
+                </Text>
+              </TouchableOpacity>
+              {errors.planetId ? <Text style={styles.errorText}>{errors.planetId}</Text> : null}
+            </View>
 
-            {/* OBJETIVO */}
-            <TouchableOpacity style={styles.selector} onPress={() => setObjectiveModal(true)}>
-              <Text style={styles.selectorText}>
-                {objective || "Selecionar objetivo"}
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.fieldContainer}>
+              <TouchableOpacity style={styles.selector} onPress={() => setObjectiveModal(true)}>
+                <Text style={styles.selectorText}>
+                  {objective || "Selecionar objetivo"}
+                </Text>
+              </TouchableOpacity>
+              {errors.objective ? <Text style={styles.errorText}>{errors.objective}</Text> : null}
+            </View>
 
-            {/* DIREÇÃO */}
-            <TouchableOpacity style={styles.selector} onPress={() => setDirectionModal(true)}>
-              <Text style={styles.selectorText}>
-                {direction || "Selecionar direção"}
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.fieldContainer}>
+              <TouchableOpacity style={styles.selector} onPress={() => setDirectionModal(true)}>
+                <Text style={styles.selectorText}>
+                  {direction || "Selecionar direção"}
+                </Text>
+              </TouchableOpacity>
+              {errors.direction ? <Text style={styles.errorText}>{errors.direction}</Text> : null}
+            </View>
 
-            {/* ⚡ ENERGIA */}
-            <TouchableOpacity style={styles.selector} onPress={() => setEnergyModal(true)}>
-              <Text style={styles.selectorText}>
-                {energy || "Selecionar energia"}
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.fieldContainer}>
+              <TouchableOpacity style={styles.selector} onPress={() => setEnergyModal(true)}>
+                <Text style={styles.selectorText}>
+                  {energy || "Selecionar energia"}
+                </Text>
+              </TouchableOpacity>
+              {errors.energy ? <Text style={styles.errorText}>{errors.energy}</Text> : null}
+            </View>
 
-            {/* DATA */}
-            <TextInput
-              placeholder="DD/MM/AAAA"
-              value={startDate}
-              keyboardType="numeric"
-              maxLength={10}
-              onChangeText={(t) => setStartDate(formatDate(t))}
-              style={styles.input}
-            />
+            <View style={styles.fieldContainer}>
+              <TextInput
+                placeholder="DD/MM/AAAA"
+                value={startDate}
+                keyboardType="numeric"
+                maxLength={10}
+                onChangeText={(t) => {
+                  setStartDate(formatDate(t));
+                  clearError("startDate");
+                }}
+                style={styles.input}
+              />
+              {errors.startDate ? <Text style={styles.errorText}>{errors.startDate}</Text> : null}
+            </View>
 
             <TouchableOpacity
               style={styles.addButton}
@@ -226,7 +251,10 @@ export default function MissionControl() {
 
             <TouchableOpacity
               style={styles.closeButton}
-              onPress={() => setCreateModal(false)}
+              onPress={() => {
+                setCreateModal(false);
+                setErrors({});
+              }}
             >
               <Text style={styles.closeButtonText}>Fechar</Text>
             </TouchableOpacity>
@@ -234,7 +262,6 @@ export default function MissionControl() {
         </View>
       </Modal>
 
-      {/* MODAIS */}
       <Modal visible={energyModal} transparent>
         <View style={styles.modal}>
           {ENERGY_TYPES.map((e) => (
@@ -244,6 +271,7 @@ export default function MissionControl() {
               onPress={() => {
                 setEnergy(e);
                 setEnergyModal(false);
+                clearError("energy");
               }}
             >
               <Text style={{ color: "#fff" }}>{e}</Text>
@@ -261,6 +289,7 @@ export default function MissionControl() {
               onPress={() => {
                 setPlanetId(p.id);
                 setPlanetModal(false);
+                clearError("planetId");
               }}
             >
               <Text style={{ color: "#fff" }}>{p.name}</Text>
@@ -278,6 +307,7 @@ export default function MissionControl() {
               onPress={() => {
                 setObjective(o);
                 setObjectiveModal(false);
+                clearError("objective");
               }}
             >
               <Text style={{ color: "#fff" }}>{o}</Text>
@@ -295,6 +325,7 @@ export default function MissionControl() {
               onPress={() => {
                 setDirection(d);
                 setDirectionModal(false);
+                clearError("direction");
               }}
             >
               <Text style={{ color: "#fff" }}>{d}</Text>
@@ -306,9 +337,6 @@ export default function MissionControl() {
   );
 }
 
-// ===============================
-// 🎨 STYLE
-// ===============================
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#050816", padding: 20 },
 
@@ -361,19 +389,28 @@ const styles = StyleSheet.create({
 
   modalTitle: { color: "#fff", fontSize: 18, marginBottom: 10 },
 
+  fieldContainer: {
+    marginBottom: 6,
+  },
+
   input: {
     backgroundColor: "#111827",
     color: "#fff",
     padding: 10,
     borderRadius: 8,
-    marginBottom: 6,
   },
 
   selector: {
     backgroundColor: "#1E293B",
     padding: 10,
     borderRadius: 8,
-    marginBottom: 6,
+  },
+
+  errorText: {
+    color: "#EF4444",
+    fontSize: 11,
+    marginTop: 3,
+    marginLeft: 2,
   },
 
   selectorText: { color: "#fff", textAlign: "center" },

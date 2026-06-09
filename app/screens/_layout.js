@@ -29,7 +29,6 @@ export default function Layout() {
 
           elevation: 0,
 
-          // 👇 ESSENCIAL: impede sobreposição com conteúdo do ScrollView
           left: 0,
           right: 0,
         },

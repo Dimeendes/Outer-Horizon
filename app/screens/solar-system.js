@@ -14,13 +14,10 @@ export default function SolarSystem() {
 
   const SIZE = Math.min(width, height);
 
-  // ☀️ SOL (sempre dominante)
   const SUN_SIZE = Math.max(SIZE * 0.22, 120);
 
-  // 🌌 espaçamento das órbitas (AFASTAMENTO GLOBAL)
   const ORBIT_SCALE = 1.35;
 
-  // 🪐 planetas
   const PLANETS = [
     { id: "mercury", radius: SIZE * 0.12 * ORBIT_SCALE, offset: 0, size: 10 },
     { id: "venus", radius: SIZE * 0.18 * ORBIT_SCALE, offset: 45, size: 18 },
@@ -113,7 +110,6 @@ export default function SolarSystem() {
           ],
         }}
       >
-        {/* ☀️ SOL */}
         <View
           style={[
             styles.sun,
@@ -127,7 +123,6 @@ export default function SolarSystem() {
           ]}
         />
 
-        {/* 🌌 PLANETAS + ÓRBITAS */}
         {PLANETS.map((p) => {
           const angle = (p.offset * Math.PI) / 180;
 
@@ -136,7 +131,6 @@ export default function SolarSystem() {
 
           return (
             <React.Fragment key={p.id}>
-              {/* órbita */}
               <View
                 pointerEvents="none"
                 style={[
@@ -150,7 +144,6 @@ export default function SolarSystem() {
                 ]}
               />
 
-              {/* 🪐 planeta clicável */}
               <Pressable
                 onPress={() =>
                   router.push({

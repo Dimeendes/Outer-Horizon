@@ -14,7 +14,6 @@ export default function PlanetDetails() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // 🔄 sincroniza com URL
   useEffect(() => {
     const index = planets.findIndex((p) => p.id === planet);
     if (index >= 0) setSelectedIndex(index);
@@ -22,7 +21,6 @@ export default function PlanetDetails() {
 
   const selectedPlanet = planets[selectedIndex];
 
-  // 🛰 CONTAGEM REAL DE SATÉLITES
   const satelliteCount =
     SATELLITES_LIST?.[selectedPlanet.id]?.length ?? 0;
 
@@ -45,7 +43,6 @@ export default function PlanetDetails() {
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.title}>🌍 Centro Planetário</Text>
 
-        {/* BOTÃO */}
         <TouchableOpacity
           style={styles.selectorButton}
           onPress={() => setModalVisible(true)}
@@ -65,14 +62,12 @@ export default function PlanetDetails() {
           <Text style={styles.info}>🌡 Temperatura: {selectedPlanet.temperatura}</Text>
           <Text style={styles.info}>☀ Distância: {selectedPlanet.distancia}</Text>
 
-          {/* ✅ CORRIGIDO AQUI */}
           <Text style={styles.info}>
             🛰 Satélites: {satelliteCount}
           </Text>
         </View>
       </ScrollView>
 
-      {/* MODAL */}
       <Modal visible={modalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modal}>
