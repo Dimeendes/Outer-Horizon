@@ -1,102 +1,101 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  useWindowDimensions,
-  ScrollView,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
+import { useEffect, useState } from 'react';
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 
-import { useLocalSearchParams } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
+import OrbitingSatellite from '../../components/OrbitingSatellite';
+import PlanetPreview from '../../components/PlanetPreview';
+import { useMission } from '../../contexts/MissionContext';
+import { SATELLITES_LIST } from '../../data/SatellitesList';
+import { planets } from '../../data/planets';
 
-import OrbitingSatellite from "../components/OrbitingSatellite";
-import PlanetPreview from "../components/PlanetPreview";
-import { SATELLITES_LIST } from "../components/SatellitesList";
-
-const PLANETS = {
-  mercury: { id: "mercury", name: "Mercúrio" },
-  venus: { id: "venus", name: "Vênus" },
-  earth: { id: "earth", name: "Terra" },
-  mars: { id: "mars", name: "Marte" },
-  jupiter: { id: "jupiter", name: "Júpiter" },
-  saturn: { id: "saturn", name: "Saturno" },
-  uranus: { id: "uranus", name: "Urano" },
-  neptune: { id: "neptune", name: "Netuno" },
-};
-
-const PLANET_LIST = Object.values(PLANETS);
+const PLANET_LIST = planets;
 
 export default function Satellites() {
   const { planet } = useLocalSearchParams();
   const { width } = useWindowDimensions();
+  const { missions } = useMission();
 
-  const [selectedPlanet, setSelectedPlanet] = useState(
-    planet || "earth"
-  );
+  const [selectedPlanet, setSelectedPlanet] = useState(planet || "earth");
+  const [modalVisible, setModalVisible] = useState(false);
 
+  // sincroniza URL
   useEffect(() => {
     if (planet) setSelectedPlanet(planet);
   }, [planet]);
 
-  const satellites =
-    SATELLITES_LIST[selectedPlanet] || [];
+  // =========================
+  // PLANETA ATUAL (SEGURANÇA)
+  // =========================
+  const planetData =
+    PLANET_LIST.find((p) => p.id === selectedPlanet) ||
+    PLANET_LIST[0];
+
+  // =========================
+  // SATÉLITES FIXOS
+  // =========================
+  const fixedSatellites = (SATELLITES_LIST?.[selectedPlanet] ?? []).map(
+    (sat) => ({
+      ...sat,
+      apoastro: sat.apoastro || sat.apoapsis || "N/A",
+      periastro: sat.periastro || sat.periapsis || "N/A",
+    })
+  );
+
+  // =========================
+  // SATÉLITES DO USUÁRIO (SEGURANÇA TOTAL)
+  // =========================
+  const userSatellites = (missions ?? [])
+    .filter((m) => m?.planetId === selectedPlanet)
+    .map((m, index) => ({
+      id: m?.id || `mission-${index}`,
+      name: m?.name || "Satélite desconhecido",
+      objective: m?.objective || "N/A",
+      apoastro: "N/A",
+      periastro: "N/A",
+      status: m?.status || "Missão planejada",
+      energy: m?.energy || "Desconhecido",
+      radius: 100,
+      duration: 8000,
+      isUserCreated: true,
+    }));
+
+  // =========================
+  // COMBINAÇÃO FINAL
+  // =========================
+  const satellites = [
+    ...fixedSatellites,
+    ...userSatellites,
+  ].filter(Boolean); // evita undefined quebrando render
 
   const orbitSize = Math.min(width * 0.9, 380);
   const center = orbitSize / 2;
-
-  const planetData = PLANETS[selectedPlanet];
 
   return (
     <LinearGradient
       colors={["#020617", "#0F172A", "#1E1B4B"]}
       style={styles.container}
     >
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-      >
-        <Text style={styles.title}>
-          🛰 Centro Orbital
-        </Text>
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <Text style={styles.title}>🛰 Centro Orbital</Text>
 
-        {/* SELECTOR */}
-        <FlatList
-          horizontal
-          data={PLANET_LIST}
-          keyExtractor={(i) => i.id}
-          showsHorizontalScrollIndicator={false}
-          style={{ marginBottom: 10 }}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() =>
-                setSelectedPlanet(item.id)
-              }
-              style={[
-                styles.btn,
-                selectedPlanet === item.id &&
-                  styles.btnActive,
-              ]}
-            >
-              <Text style={styles.btnText}>
-                {item.name}
-              </Text>
-            </TouchableOpacity>
-          )}
-        />
+        {/* SELECT PLANETA */}
+        <TouchableOpacity
+          style={styles.selectorButton}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.selectorText}>
+            {planetData?.nome ?? "Planeta"}
+          </Text>
+        </TouchableOpacity>
 
-        {/* 🌌 ORBIT SYSTEM (CENTRO ÚNICO REAL) */}
+        {/* ORBITA */}
         <View
           style={[
             styles.orbitArea,
-            {
-              width: orbitSize,
-              height: orbitSize,
-            },
+            { width: orbitSize, height: orbitSize },
           ]}
         >
-          {/* ORBITA VISUAL */}
           <View
             style={[
               styles.orbit,
@@ -109,54 +108,78 @@ export default function Satellites() {
             ]}
           />
 
-          {/* 🪐 PLANETA NO CENTRO REAL */}
           <View style={styles.planetWrapper}>
             <PlanetPreview planet={planetData} />
           </View>
 
-          {/* 🛰 SATÉLITES CORRETOS */}
           {satellites.map((sat, index) => (
             <OrbitingSatellite
               key={sat.id}
-              radius={sat.radius}
-              duration={sat.duration}
+              radius={sat.radius || 80}
+              duration={sat.duration || 8000}
               centerX={center}
               centerY={center}
               size={10}
-              initialAngle={
-                (index * 360) / satellites.length
-              }
+              initialAngle={(index * 360) / satellites.length}
             />
           ))}
         </View>
 
-        {/* INFO */}
+        {/* LISTA */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>
-            🛰 Satélites
-          </Text>
+          <Text style={styles.cardTitle}>🛰 Satélites</Text>
 
           {satellites.map((sat) => (
             <View key={sat.id} style={styles.item}>
-              <Text style={styles.name}>
-                {sat.name}
+              <Text style={styles.name}>{sat.name}</Text>
+
+              {sat.isUserCreated && (
+                <Text style={styles.missionStatus}>
+                  📡 {sat.status}
+                </Text>
+              )}
+
+              <Text style={styles.info}>
+                ⚡ Energia: {sat.energy}
               </Text>
+
+              <Text style={styles.info}>
+                🪐 Apoastro: {sat.apoastro}
+              </Text>
+
+              <Text style={styles.info}>
+                🪐 Periastro: {sat.periastro}
+              </Text>
+
               <Text style={styles.info}>
                 🎯 {sat.objective}
-              </Text>
-              <Text style={styles.info}>
-                📡 {sat.telemetry}
-              </Text>
-              <Text style={styles.info}>
-                ⏱ {sat.latency}
-              </Text>
-              <Text style={styles.info}>
-                📶 {sat.signal}
               </Text>
             </View>
           ))}
         </View>
       </ScrollView>
+
+      {/* MODAL */}
+      <Modal visible={modalVisible} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modal}>
+            {PLANET_LIST.map((p) => (
+              <TouchableOpacity
+                key={p.id}
+                style={styles.modalItem}
+                onPress={() => {
+                  setSelectedPlanet(p.id);
+                  setModalVisible(false);
+                }}
+              >
+                <Text style={{ color: "#fff" }}>
+                  {p.nome}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </Modal>
     </LinearGradient>
   );
 }
@@ -174,23 +197,18 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 10,
   },
 
-  btn: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    marginHorizontal: 6,
-    borderRadius: 12,
-    backgroundColor: "rgba(255,255,255,0.06)",
+  selectorButton: {
+    backgroundColor: "#1E293B",
+    padding: 12,
+    borderRadius: 10,
+    marginVertical: 10,
   },
 
-  btnActive: {
-    backgroundColor: "#6366F1",
-  },
-
-  btnText: {
+  selectorText: {
     color: "#fff",
+    fontWeight: "bold",
   },
 
   orbitArea: {
@@ -206,13 +224,10 @@ const styles = StyleSheet.create({
   },
 
   planetWrapper: {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: [
-    { translateX: -60 },
-    { translateY: -60 },
-  ],
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: [{ translateX: -60 }, { translateY: -60 }],
   },
 
   card: {
@@ -230,7 +245,10 @@ const styles = StyleSheet.create({
   },
 
   item: {
-    marginBottom: 12,
+    marginBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.1)",
+    paddingBottom: 10,
   },
 
   name: {
@@ -241,5 +259,30 @@ const styles = StyleSheet.create({
   info: {
     color: "#CBD5E1",
     fontSize: 12,
+  },
+
+  missionStatus: {
+    color: "#FACC15",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "center",
+    padding: 20,
+  },
+
+  modal: {
+    backgroundColor: "#0F172A",
+    borderRadius: 16,
+    padding: 20,
+  },
+
+  modalItem: {
+    padding: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#333",
   },
 });

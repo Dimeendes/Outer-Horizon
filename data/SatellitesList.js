@@ -1,0 +1,146 @@
+export const SATELLITES_LIST = {
+  earth: [
+    {
+      id: "SAT-001",
+      name: "Horizon Scout",
+      objective: "Pesquisa científica",
+      apoapsis: "800 km",
+      periapsis: "400 km",
+      telemetry: "ativo",
+      latency: "120 ms",
+      signal: "Alta",
+      energy: "Solar",
+    },
+    {
+      id: "SAT-002",
+      name: "Climate Watcher",
+      objective: "Pesquisa científica",
+      apoapsis: "900 km",
+      periapsis: "500 km",
+      telemetry: "ativo",
+      latency: "140 ms",
+      signal: "Média",
+      energy: "Solar",
+    },
+    {
+      id: "SAT-003",
+      name: "Deep Earth Probe",
+      objective: "escaneamento terrestre",
+      apoapsis: "1200 km",
+      periapsis: "700 km",
+      telemetry: "inativo",
+      latency: "0 ms",
+      signal: "Alta",
+      energy: "Nuclear",
+    },
+  ],
+
+  mars: [
+    {
+      id: "MRS-01",
+      name: "Mars Mapper",
+      objective: "escaneamento terrestre",
+      apoapsis: "1100 km",
+      periapsis: "600 km",
+      telemetry: "ativo",
+      latency: "280 ms",
+      signal: "Alta",
+      energy: "Solar",
+    },
+    {
+      id: "MRS-02",
+      name: "Polar Observer",
+      objective: "escaneamento terrestre",
+      apoapsis: "1300 km",
+      periapsis: "800 km",
+      telemetry: "inativo",
+      latency: "0 ms",
+      signal: "Média",
+      energy: "Solar",
+    },
+  ],
+
+  jupiter: [
+    {
+      id: "JUP-OBS",
+      name: "Jupiter Storm Eye",
+      objective: "exploração atmosférica",
+      apoapsis: "5000 km",
+      periapsis: "3000 km",
+      telemetry: "ativo",
+      latency: "600 ms",
+      signal: "Baixa",
+      energy: "Nuclear",
+    },
+  ],
+
+  saturn: [
+    {
+      id: "SAT-RING",
+      name: "Ring Analyzer",
+      objective: "coleta gravitacional",
+      apoapsis: "2000 km",
+      periapsis: "1200 km",
+      telemetry: "ativo",
+      latency: "450 ms",
+      signal: "Média",
+      energy: "Solar",
+    },
+  ],
+
+  mercury: [
+    {
+      id: "MRC-01",
+      name: "The Interloper",
+      objective: "escaneamento terrestre",
+      apoapsis: "1500 km",
+      periapsis: "1000 km",
+      telemetry: "inativo",
+      latency: "0 ms",
+      signal: "Alta",
+      energy: "Solar",
+    },
+  ],
+
+  venus: [
+    {
+      id: "VEN-01",
+      name: "Venus Observer",
+      objective: "exploração atmosférica",
+      apoapsis: "2500 km",
+      periapsis: "1500 km",
+      telemetry: "ativo",
+      latency: "300 ms",
+      signal: "Média",
+      energy: "Solar",
+    },
+  ],
+
+  neptune: [
+    {
+      id: "NEP-01",
+      name: "Neptune Explorer",
+      objective: "exploração atmosférica",
+      apoapsis: "3000 km",
+      periapsis: "1500 km",
+      telemetry: "ativo",
+      latency: "400 ms",
+      signal: "Média",
+      energy: "Solar",
+    },
+  ],
+
+  uranus: [
+    {
+      id: "URA-01",
+      name: "Uranus Observer",
+      objective: "exploração atmosférica",
+      apoapsis: "2500 km",
+      periapsis: "1800 km",
+      telemetry: "inativo",
+      latency: "0 ms",
+      signal: "Média",
+      energy: "Solar",
+    },
+  ],
+};

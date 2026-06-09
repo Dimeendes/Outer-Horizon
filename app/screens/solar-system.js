@@ -1,17 +1,8 @@
-import React, { useRef } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  useWindowDimensions,
-  Animated,
-  PanResponder,
-  Platform,
-  Pressable,
-} from "react-native";
+import React, { useRef } from 'react';
+import { Animated, PanResponder, Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
-import { useRouter } from "expo-router";
-import PlanetPreview from "../components/PlanetPreview";
+import PlanetPreview from '../../components/PlanetPreview';
 
 export default function SolarSystem() {
   const router = useRouter();
@@ -101,11 +92,16 @@ export default function SolarSystem() {
     scale.setValue(clampScale(current - delta * 0.001));
   };
 
+  const webOnlyProps =
+    Platform.OS === "web"
+      ? { onWheel: handleWheel }
+      : {};
+
   return (
     <View
       style={styles.container}
       {...panResponder.panHandlers}
-      onWheel={handleWheel}
+      {...webOnlyProps}
     >
       <Animated.View
         style={{
@@ -188,16 +184,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#020617",
-  },
-
-  title: {
-    color: "white",
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginTop: 60,
-    position: "absolute",
-    width: "100%",
   },
 
   sun: {
